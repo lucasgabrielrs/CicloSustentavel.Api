@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="CicloSustentavel.Api/CicloSustentavel.Api.csproj" />
+  <Project Path="CicloSustentavel.Application/CicloSustentavel.Application.csproj" />
+  <Project Path="CicloSustentavel.Communication/CicloSustentavel.Communication.csproj" />
+  <Project Path="CicloSustentavel.Domain/CicloSustentavel.Domain.csproj" />
+  <Project Path="CicloSustentavel.Infrastructure/CicloSustentavel.Infrastructure.csproj" />
+</Solution>
