@@ -7,10 +7,20 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlite("Data Source=../CicloSustentavel.Infrastructure/CicloSustentavel.db"));
-
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? "Data Source=/app/data/CicloSustentavel.db";
+
+if (string.IsNullOrWhiteSpace(connectionString))
+{
+    if (builder.Environment.IsDevelopment())
+    {
+        connectionString = "Data Source=../CicloSustentavel.Infrastructure/CicloSustentavel.db";
+    }
+    else
+    {
+        connectionString = "Data Source=/app/data/CicloSustentavel.db";
+    }
+}
 
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlite(connectionString));
 
