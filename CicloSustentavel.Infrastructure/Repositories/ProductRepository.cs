@@ -1,6 +1,7 @@
 ﻿using CicloSustentavel.Domain.Models;
 using CicloSustentavel.Domain.Repositories;
 using CicloSustentavel.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace CicloSustentavel.Infrastructure.Repositories;
 
@@ -19,9 +20,21 @@ public class ProductRepository : IProductRepository
         _context.SaveChanges();
     }
 
-    public List<ProductModel> GetAll()
+    public List<ProductModel> GetAll(Guid userId)
     {
-        return _context.Products.ToList();
+        var user = _context.Users
+            .Include(u => u.Empresas)
+            .FirstOrDefault(u => u.Id == userId);
+
+        if (user == null || !user.Empresas.Any())
+            return new List<ProductModel>();
+
+        var empresaIds = user.Empresas.Select(e => e.Id).ToList();
+
+        return _context.Products
+            .Include(p => p.Empresa)
+            .Where(p => empresaIds.Contains(p.EmpresaId))
+            .ToList();
     }
 
     public ProductModel GetById(Guid id)

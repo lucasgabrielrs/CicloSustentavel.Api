@@ -49,9 +49,9 @@ public class ProductService
         _repository.Add(entity);
     }
 
-    public ResponseAllProductsJson GetAllProducts()
+    public ResponseAllProductsJson GetAllProducts(Guid userId)
     {
-        var products = _repository.GetAll();
+        var products = _repository.GetAll(userId);
 
         return new ResponseAllProductsJson
         {

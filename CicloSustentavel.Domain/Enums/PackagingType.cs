@@ -4,7 +4,7 @@
     {
         Biodegradavel,
         SemEmbalagem,
-        Recivlavel,
+        Reciclavel,
         Retornavel,
         Outro
     }
