@@ -7,20 +7,20 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-    ?? "Data Source=/app/data/CicloSustentavel.db";
-
-if (string.IsNullOrWhiteSpace(connectionString))
+builder.Services.AddCors(options =>
 {
-    if (builder.Environment.IsDevelopment())
+    options.AddPolicy("WebAppPolicy", policy =>
     {
-        connectionString = "Data Source=../CicloSustentavel.Infrastructure/CicloSustentavel.db";
-    }
-    else
-    {
-        connectionString = "Data Source=/app/data/CicloSustentavel.db";
-    }
-}
+        policy.WithOrigins("http://localhost:5173")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? (builder.Environment.IsDevelopment()
+        ? "Data Source=../CicloSustentavel.Infrastructure/CicloSustentavel.db"
+        : "Data Source=/app/data/CicloSustentavel.db");
 
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlite(connectionString));
 
@@ -36,6 +36,8 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<UserService>();
 
 var app = builder.Build();
+
+app.UseCors("WebAppPolicy");
 
 app.UseSwagger();
 app.UseSwaggerUI();

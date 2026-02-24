@@ -32,7 +32,7 @@ public class ProductsController : ControllerBase
     }
 
     [HttpGet]
-    [Route("/listAll")]
+    [Route("listAll")]
     [ProducesResponseType(typeof(ResponseAllProductsJson), StatusCodes.Status200OK)]
     public IActionResult GetAll()
     {
@@ -45,7 +45,7 @@ public class ProductsController : ControllerBase
     }
 
     [HttpGet]
-    [Route("/expiringSoon")]
+    [Route("expiringSoon")]
     [ProducesResponseType(typeof(ResponseProductJson), StatusCodes.Status200OK)]
     public IActionResult GetExpiringSoon()
     {
@@ -55,5 +55,39 @@ public class ProductsController : ControllerBase
             return Ok(response);
 
         return NoContent();
+    }
+
+    [HttpDelete]
+    [Route("{id}")]
+    public IActionResult Delete(Guid id)
+    {
+        try
+        {
+            _service.Delete(id);
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+    }
+
+    [HttpPut]
+    [Route("{id}")]
+    public IActionResult Update(Guid id, [FromBody] RegisterProductRequestJson request)
+    {
+        try
+        {
+            _service.Update(id, request);
+            return NoContent();
+        }
+        catch (ValidationErrorsException ex)
+        {
+            return BadRequest(new { errors = ex.ErrorMessages });
+        }
+        catch (Exception ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
     }
 }

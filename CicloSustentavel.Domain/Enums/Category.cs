@@ -4,7 +4,7 @@
     {
         FrutasVerduras,
         Laticinios,
-        Panificacao,
+        Padaria,
         Carnes,
         Bebidas,
         GraosCereais,

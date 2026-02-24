@@ -1,5 +1,6 @@
 ﻿using CicloSustentavel.Domain.Enums;
 using CicloSustentavel.Domain.Models;
+using BCrypt.Net;
 
 namespace CicloSustentavel.Infrastructure.Data;
 
@@ -19,7 +20,7 @@ public static class DbInitializer
             {
                 Name = "Pão Francês Seed",
                 UnitPrice = 12.00m,
-                Category = Category.Panificacao,
+                Category = Category.Padaria,
                 ExpirationDate = DateTime.Now, // Vence HOJE para testar o alerta vermelho
                 InventoryQuantity = 15,
                 UnitOfMeasurement = UnitOfMeasurement.Quilograma,

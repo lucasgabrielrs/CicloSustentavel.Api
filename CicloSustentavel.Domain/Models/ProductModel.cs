@@ -4,7 +4,7 @@ namespace CicloSustentavel.Domain.Models
 {
     public class ProductModel
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public Category Category { get; set; }
         public decimal UnitPrice { get; set; }
@@ -14,5 +14,7 @@ namespace CicloSustentavel.Domain.Models
         public UnitOfMeasurement UnitOfMeasurement { get; set; }
         public string Origin { get; set; } = string.Empty;
         public PackagingType PackagingType { get; set; }
+        public Guid EmpresaId { get; set; }
+        public EmpresaModel Empresa { get; set; } = default!;
     }
 }

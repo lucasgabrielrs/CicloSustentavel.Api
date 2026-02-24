@@ -70,8 +70,53 @@ public class ProductService
         };
     }
 
+    public ResponseProductJson GetById(Guid id)
+    {
+        var product = _repository.GetById(id);
+        if (product == null)
+            throw new ValidationErrorsException(new List<string> { "Produto não encontrado." });
+        return new ResponseProductJson
+        {
+            Id = product.Id,
+            Name = product.Name,
+            UnitPrice = product.UnitPrice,
+            InventoryQuantity = product.InventoryQuantity,
+            ExpirationDate = product.ExpirationDate,
+            Category = product.Category.ToString(),
+            UnitOfMeasurement = product.UnitOfMeasurement.ToString(),
+            Origin = product.Origin,
+            PackagingType = product.PackagingType.ToString()
+        };
+    }
+
     public List<ProductModel> GetExpiringSoon()
     {
         return _repository.GetNearExpiration(days: 7);
+    }
+
+    public void Delete(Guid id)
+    {
+        var product = _repository.GetById(id);
+        if (product == null)
+            throw new ValidationErrorsException(new List<string> { "Produto não encontrado." });
+        _repository.Delete(product);
+    }
+
+    public void Update(Guid id, RegisterProductRequestJson request)
+    {
+        Validate(request);
+        var existingProduct = _repository.GetById(id);
+        if (existingProduct == null)
+            throw new ValidationErrorsException(new List<string> { "Produto não encontrado." });
+        existingProduct.Name = request.Name;
+        existingProduct.UnitPrice = request.UnitPrice;
+        existingProduct.InventoryQuantity = request.InventoryQuantity;
+        existingProduct.ExpirationDate = request.ExpirationDate;
+        existingProduct.Category = (Domain.Enums.Category)request.Category;
+        existingProduct.UnitOfMeasurement = (Domain.Enums.UnitOfMeasurement)request.UnitOfMeasurement;
+        existingProduct.Description = request.Description;
+        existingProduct.Origin = request.Origin;
+        existingProduct.PackagingType = (Domain.Enums.PackagingType)request.PackagingType;
+        _repository.Update(existingProduct);
     }
 }

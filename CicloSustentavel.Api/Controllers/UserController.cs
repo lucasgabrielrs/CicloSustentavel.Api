@@ -28,7 +28,8 @@ public class UserController : ControllerBase
                 Id = user.Id,
                 Name = user.Name,
                 Email = user.Email,
-                Role = user.Role
+                Role = user.Role,
+                EmpresaIds = user.Empresas.Select(e => e.Id).ToList()
             };
             return Created(string.Empty, response);
         }
@@ -48,7 +49,16 @@ public class UserController : ControllerBase
             return Unauthorized(new { message = "E-mail ou senha inválidos." });
         }
 
-        return Ok();
+        var response = new ResponseUserJson
+        {
+            Id = user.Id,
+            Name = user.Name,
+            Email = user.Email,
+            Role = user.Role,
+            EmpresaIds = user.Empresas.Select(e => e.Id).ToList()
+        };
+
+        return Ok(response);
     }
 
     [HttpGet]
@@ -60,13 +70,14 @@ public class UserController : ControllerBase
             Id = user.Id,
             Name = user.Name,
             Email = user.Email,
-            Role = user.Role
+            Role = user.Role,
+            EmpresaIds = user.Empresas.Select(e => e.Id).ToList()
         }).ToList();
         return Ok(response);
     }
 
     [HttpGet("{id}")]
-    public IActionResult GetById(int id)
+    public IActionResult GetById(Guid id)
     {
         var user = _service.GetById(id);
         if (user == null)
@@ -78,8 +89,44 @@ public class UserController : ControllerBase
             Id = user.Id,
             Name = user.Name,
             Email = user.Email,
-            Role = user.Role
+            Role = user.Role,
+            EmpresaIds = user.Empresas.Select(e => e.Id).ToList()
         };
         return Ok(response);
+    }
+
+    [HttpPost("{userId}/empresas/{empresaId}")]
+    public IActionResult LinkToEmpresa(Guid userId, Guid empresaId)
+    {
+        try
+        {
+            _service.LinkUserToEmpresa(userId, empresaId);
+            return NoContent();
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+
+    [HttpDelete("{userId}/empresas/{empresaId}")]
+    public IActionResult UnlinkFromEmpresa(Guid userId, Guid empresaId)
+    {
+        try
+        {
+            _service.UnlinkUserFromEmpresa(userId, empresaId);
+            return NoContent();
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+
+    [HttpGet("{userId}/empresas")]
+    public IActionResult GetUserEmpresas(Guid userId)
+    {
+        var empresas = _service.GetUserEmpresas(userId);
+        return Ok(empresas);
     }
 }

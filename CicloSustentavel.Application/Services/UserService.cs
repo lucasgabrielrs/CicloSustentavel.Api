@@ -40,8 +40,23 @@ public class UserService
             Role = request.Role
         };
         _repository.Create(entity);
-        
+
         return entity;
+    }
+
+    public void LinkUserToEmpresa(Guid userId, Guid empresaId)
+    {
+        _repository.LinkUserToEmpresa(userId, empresaId);
+    }
+
+    public void UnlinkUserFromEmpresa(Guid userId, Guid empresaId)
+    {
+        _repository.UnlinkUserFromEmpresa(userId, empresaId);
+    }
+
+    public List<EmpresaModel> GetUserEmpresas(Guid userId)
+    {
+        return _repository.GetUserEmpresas(userId);
     }
 
     public List<UserModel> GetAllUsers()
@@ -49,7 +64,7 @@ public class UserService
         return _repository.GetAll();
     }
 
-    public UserModel? GetById(int id)
+    public UserModel? GetById(Guid id)
     {
         return _repository.GetById(id);
     }

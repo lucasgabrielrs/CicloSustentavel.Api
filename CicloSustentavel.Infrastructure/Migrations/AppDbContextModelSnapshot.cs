@@ -17,11 +17,37 @@ namespace CicloSustentavel.Infrastructure.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.2");
 
+            modelBuilder.Entity("CicloSustentavel.Domain.Models.EmpresaModel", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Cnpj")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("NomeFantasia")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("RazaoSocial")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Cnpj")
+                        .IsUnique();
+
+                    b.ToTable("Empresas");
+                });
+
             modelBuilder.Entity("CicloSustentavel.Domain.Models.ProductModel", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Category")
                         .IsRequired()
@@ -29,6 +55,9 @@ namespace CicloSustentavel.Infrastructure.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("EmpresaId")
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("ExpirationDate")
@@ -58,14 +87,16 @@ namespace CicloSustentavel.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("EmpresaId");
+
                     b.ToTable("Products");
                 });
 
             modelBuilder.Entity("CicloSustentavel.Domain.Models.UserModel", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -86,6 +117,47 @@ namespace CicloSustentavel.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("UserEmpresas", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("EmpresaId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("UserId", "EmpresaId");
+
+                    b.HasIndex("EmpresaId");
+
+                    b.ToTable("UserEmpresas", (string)null);
+                });
+
+            modelBuilder.Entity("CicloSustentavel.Domain.Models.ProductModel", b =>
+                {
+                    b.HasOne("CicloSustentavel.Domain.Models.EmpresaModel", "Empresa")
+                        .WithMany()
+                        .HasForeignKey("EmpresaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Empresa");
+                });
+
+            modelBuilder.Entity("UserEmpresas", b =>
+                {
+                    b.HasOne("CicloSustentavel.Domain.Models.EmpresaModel", null)
+                        .WithMany()
+                        .HasForeignKey("EmpresaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CicloSustentavel.Domain.Models.UserModel", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

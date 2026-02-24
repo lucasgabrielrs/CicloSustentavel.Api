@@ -24,6 +24,11 @@ public class ProductRepository : IProductRepository
         return _context.Products.ToList();
     }
 
+    public ProductModel GetById(Guid id)
+    {
+        return _context.Products.Find(id);
+    }
+
     public List<ProductModel> GetNearExpiration(int days)
     {
         var limitDate = DateTime.Now.AddDays(days);
@@ -31,5 +36,28 @@ public class ProductRepository : IProductRepository
             .Where(p => p.ExpirationDate <= limitDate)
             .OrderBy(p => p.ExpirationDate)
             .ToList();
+    }
+
+    public void Delete(ProductModel product)
+    {
+        _context.Products.Remove(product);
+        _context.SaveChanges();
+    }
+
+    public ProductModel Update(ProductModel product)
+    {
+        var existingProduct = _context.Products.Find(product.Id);
+        if (existingProduct == null)
+            throw new Exception("Produto não encontrado.");
+        existingProduct.Name = product.Name;
+        existingProduct.UnitPrice = product.UnitPrice;
+        existingProduct.InventoryQuantity = product.InventoryQuantity;
+        existingProduct.ExpirationDate = product.ExpirationDate;
+        existingProduct.Category = product.Category;
+        existingProduct.UnitOfMeasurement = product.UnitOfMeasurement;
+        existingProduct.Origin = product.Origin;
+        existingProduct.PackagingType = product.PackagingType;
+        _context.SaveChanges();
+        return existingProduct;
     }
 }
