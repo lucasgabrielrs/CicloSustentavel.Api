@@ -4,16 +4,19 @@ using CicloSustentavel.Application.Validators;
 using CicloSustentavel.Communication.Requests.Users;
 using CicloSustentavel.Domain.Models;
 using CicloSustentavel.Domain.Repositories;
+using CicloSustentavel.Domain.Security.Cryptography;
 
 namespace CicloSustentavel.Application.Services;
 
 public class UserService
 {
     private readonly IUserRepository _repository;
+    private readonly IPasswordEncrypt _passwordEncrypt;
 
-    public UserService(IUserRepository repository)
+    public UserService(IUserRepository repository, IPasswordEncrypt passwordEncrypt)
     {
         _repository = repository;
+        _passwordEncrypt = passwordEncrypt;
     }
 
     public void Validate(RegisterUserRequestJson request)
@@ -36,7 +39,7 @@ public class UserService
         {
             Name = request.Name,
             Email = request.Email,
-            Password = BCrypt.Net.BCrypt.HashPassword(request.Password),
+            Password = _passwordEncrypt.Encrypt(request.Password),
             Role = request.Role
         };
         _repository.Create(entity);

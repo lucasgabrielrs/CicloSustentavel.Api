@@ -1,6 +1,8 @@
 using CicloSustentavel.Application.Services;
 using CicloSustentavel.Domain.Repositories;
+using CicloSustentavel.Domain.Security.Cryptography;
 using CicloSustentavel.Infrastructure.Data;
+using CicloSustentavel.Infrastructure.Security;
 using CicloSustentavel.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 
@@ -34,6 +36,8 @@ builder.Services.AddScoped<ProductService>();
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<UserService>();
+
+builder.Services.AddScoped<IPasswordEncrypt, EncryptBcrypt>();
 
 var app = builder.Build();
 

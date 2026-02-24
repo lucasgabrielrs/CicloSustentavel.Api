@@ -16,9 +16,7 @@ public class RegisterUserValidator : AbstractValidator<RegisterUserRequestJson>
             .EmailAddress().WithMessage("O email deve ter um formato válido.")
             .MaximumLength(255).WithMessage("O email deve ter no máximo 255 caracteres.");
 
-        RuleFor(request => request.Password)
-            .NotEmpty().WithMessage("A senha é obrigatória.")
-            .MinimumLength(6).WithMessage("A senha deve ter no mínimo 6 caracteres.");
+        RuleFor(request => request.Password).SetValidator(new PasswordUserValidator<RegisterUserRequestJson>());
 
         RuleFor(request => request.Role)
             .NotEmpty().WithMessage("O tipo do usuário é obrigatório.")
