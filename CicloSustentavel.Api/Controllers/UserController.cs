@@ -18,19 +18,11 @@ public class UserController : ControllerBase
     }
 
     [HttpPost]
-    public IActionResult Create([FromBody] RegisterUserRequestJson request)
+    public async Task<IActionResult> Create([FromBody] RegisterUserRequestJson request)
     {
         try
         {
-            var user = _service.RegisterUser(request);
-            var response = new ResponseUserJson
-            {
-                Id = user.Id,
-                Name = user.Name,
-                Email = user.Email,
-                Role = user.Role,
-                EmpresaIds = user.Empresas.Select(e => e.Id).ToList()
-            };
+            var response = _service.RegisterUser(request);
             return Created(string.Empty, response);
         }
         catch (ValidationErrorsException ex)
@@ -39,32 +31,10 @@ public class UserController : ControllerBase
         }
     }
 
-    [HttpPost("login")]
-    public IActionResult Login([FromBody] LoginUserRequest request)
-    {
-        var user = _service.ValidateLogin(request.Email, request.Password);
-
-        if (user == null)
-        {
-            return Unauthorized(new { message = "E-mail ou senha inválidos." });
-        }
-
-        var response = new ResponseUserJson
-        {
-            Id = user.Id,
-            Name = user.Name,
-            Email = user.Email,
-            Role = user.Role,
-            EmpresaIds = user.Empresas.Select(e => e.Id).ToList()
-        };
-
-        return Ok(response);
-    }
-
     [HttpGet]
-    public IActionResult GetAll()
+    public async Task<IActionResult> GetAll()
     {
-        var users = _service.GetAllUsers();
+        var users = await _service.GetAllUsers();
         var response = users.Select(user => new ResponseUserJson
         {
             Id = user.Id,
@@ -77,9 +47,9 @@ public class UserController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public IActionResult GetById(Guid id)
+    public async Task<IActionResult> GetById(Guid id)
     {
-        var user = _service.GetById(id);
+        var user = await _service.GetById(id);
         if (user == null)
         {
             return NotFound();
@@ -96,11 +66,11 @@ public class UserController : ControllerBase
     }
 
     [HttpPost("{userId}/empresas/{empresaId}")]
-    public IActionResult LinkToEmpresa(Guid userId, Guid empresaId)
+    public async Task<IActionResult> LinkToEmpresa(Guid userId, Guid empresaId)
     {
         try
         {
-            _service.LinkUserToEmpresa(userId, empresaId);
+            await _service.LinkUserToEmpresa(userId, empresaId);
             return NoContent();
         }
         catch (ArgumentException ex)
@@ -110,11 +80,11 @@ public class UserController : ControllerBase
     }
 
     [HttpDelete("{userId}/empresas/{empresaId}")]
-    public IActionResult UnlinkFromEmpresa(Guid userId, Guid empresaId)
+    public async Task<IActionResult> UnlinkFromEmpresa(Guid userId, Guid empresaId)
     {
         try
         {
-            _service.UnlinkUserFromEmpresa(userId, empresaId);
+            await _service.UnlinkUserFromEmpresa(userId, empresaId);
             return NoContent();
         }
         catch (ArgumentException ex)
@@ -124,9 +94,9 @@ public class UserController : ControllerBase
     }
 
     [HttpGet("{userId}/empresas")]
-    public IActionResult GetUserEmpresas(Guid userId)
+    public async Task<IActionResult> GetUserEmpresas(Guid userId)
     {
-        var empresas = _service.GetUserEmpresas(userId);
+        var empresas = await _service.GetUserEmpresas(userId);
         return Ok(empresas);
     }
 }

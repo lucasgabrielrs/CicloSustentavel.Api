@@ -1,11 +1,8 @@
 ﻿namespace CicloSustentavel.Communication.Responses.Users;
 
-public class ResponseUserJson
+public class ResponseRegisteredUserJson
 {
-    public Guid Id { get; set; }
     public string Name { get; set; } = string.Empty;
-    public string Email { get; set; } = string.Empty;
-    public string Role { get; set; } = string.Empty;
     public string Token { get; set; } = string.Empty;
     public List<Guid> EmpresaIds { get; set; } = new List<Guid>();
 }

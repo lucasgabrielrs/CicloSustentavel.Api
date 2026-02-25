@@ -14,71 +14,73 @@ public class UserRepository : IUserRepository
         _context = context;
     }
 
-    public UserModel? GetByEmail(string email)
+    public async Task<UserModel?> GetByEmail(string email)
     {
-        return _context.Users.FirstOrDefault(u => u.Email == email);
+        return await _context.Users
+            .Include(u => u.Empresas)
+            .FirstOrDefaultAsync(u => u.Email == email);
     }
 
-    void IUserRepository.Create(UserModel userM)
+    async Task IUserRepository.Create(UserModel userM)
     {
         var user = userM as UserModel;
         if (user == null)
             throw new ArgumentException("Expected UserModel", nameof(user));
 
-        _context.Users.Add(user);
-        _context.SaveChanges();
+        await _context.Users.AddAsync(user);
+        await _context.SaveChangesAsync();
     }
 
-    void IUserRepository.Delete(Guid id)
+    async Task IUserRepository.Delete(Guid id)
     {
-        var user = _context.Users.Find(id);
+        var user = await _context.Users.FindAsync(id);
         if (user != null)
         {
             _context.Users.Remove(user);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
     }
 
-    List<UserModel> IUserRepository.GetAll()
+    async Task<List<UserModel>> IUserRepository.GetAll()
     {
-        return _context.Users.ToList();
+        return await _context.Users.ToListAsync();
     }
 
-    UserModel? IUserRepository.GetById(Guid id)
+    async Task<UserModel?> IUserRepository.GetById(Guid id)
     {
-        return _context.Users.Find(id);
+        return await _context.Users.FindAsync(id);
     }
 
-    void IUserRepository.Update(UserModel userM)
+    async Task IUserRepository.Update(UserModel userM)
     {
         var user = userM as UserModel;
         if (user == null)
             throw new ArgumentException("Expected UserModel", nameof(user));
 
         _context.Users.Update(user);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
     }
 
-    public void LinkUserToEmpresa(Guid userId, Guid empresaId)
+    public async Task LinkUserToEmpresa(Guid userId, Guid empresaId)
     {
-        var user = _context.Users.Include(u => u.Empresas).FirstOrDefault(u => u.Id == userId);
+        var user = await _context.Users.Include(u => u.Empresas).FirstOrDefaultAsync(u => u.Id == userId);
         if (user == null)
             throw new ArgumentException("Usuário não encontrado.");
 
-        var empresa = _context.Empresas.Find(empresaId);
+        var empresa = await _context.Empresas.FindAsync(empresaId);
         if (empresa == null)
             throw new ArgumentException("Empresa não encontrada.");
 
         if (!user.Empresas.Any(e => e.Id == empresaId))
         {
             user.Empresas.Add(empresa);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
     }
 
-    public void UnlinkUserFromEmpresa(Guid userId, Guid empresaId)
+    public async Task UnlinkUserFromEmpresa(Guid userId, Guid empresaId)
     {
-        var user = _context.Users.Include(u => u.Empresas).FirstOrDefault(u => u.Id == userId);
+        var user = await _context.Users.Include(u => u.Empresas).FirstOrDefaultAsync(u => u.Id == userId);
         if (user == null)
             throw new ArgumentException("Usuário não encontrado.");
 
@@ -86,13 +88,13 @@ public class UserRepository : IUserRepository
         if (empresa != null)
         {
             user.Empresas.Remove(empresa);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
     }
 
-    public List<EmpresaModel> GetUserEmpresas(Guid userId)
+    public async Task<List<EmpresaModel>> GetUserEmpresas(Guid userId)
     {
-        var user = _context.Users.Include(u => u.Empresas).FirstOrDefault(u => u.Id == userId);
+        var user = await _context.Users.Include(u => u.Empresas).FirstOrDefaultAsync(u => u.Id == userId);
         return user?.Empresas.ToList() ?? new List<EmpresaModel>();
     }
 }

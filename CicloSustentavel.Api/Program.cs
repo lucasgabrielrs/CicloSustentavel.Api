@@ -1,9 +1,11 @@
 using CicloSustentavel.Application.Services;
 using CicloSustentavel.Domain.Repositories;
 using CicloSustentavel.Domain.Security.Cryptography;
+using CicloSustentavel.Domain.Security.Tokens;
 using CicloSustentavel.Infrastructure.Data;
-using CicloSustentavel.Infrastructure.Security;
 using CicloSustentavel.Infrastructure.Repositories;
+using CicloSustentavel.Infrastructure.Security.Cryptography;
+using CicloSustentavel.Infrastructure.Security.Tokens;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -38,6 +40,14 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<UserService>();
 
 builder.Services.AddScoped<IPasswordEncrypt, EncryptBcrypt>();
+
+// Configuração JWT
+var jwtSettings = builder.Configuration.GetSection("Settings:Jwt");
+var secretKey = jwtSettings["SecretKey"] ?? throw new InvalidOperationException("JWT SecretKey não configurada");
+var expiresTimeMinutes = uint.Parse(jwtSettings["ExpiresTimeMinutes"] ?? "60");
+
+builder.Services.AddScoped<IAccesTokenGenerator>(provider => 
+    new JwtTokenGenerator(expiresTimeMinutes, secretKey));
 
 var app = builder.Build();
 

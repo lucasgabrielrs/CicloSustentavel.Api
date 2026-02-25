@@ -2,9 +2,11 @@
 using CicloSustentavel.Application.Exceptions;
 using CicloSustentavel.Application.Validators;
 using CicloSustentavel.Communication.Requests.Users;
+using CicloSustentavel.Communication.Responses.Users;
 using CicloSustentavel.Domain.Models;
 using CicloSustentavel.Domain.Repositories;
 using CicloSustentavel.Domain.Security.Cryptography;
+using CicloSustentavel.Domain.Security.Tokens;
 
 namespace CicloSustentavel.Application.Services;
 
@@ -12,11 +14,13 @@ public class UserService
 {
     private readonly IUserRepository _repository;
     private readonly IPasswordEncrypt _passwordEncrypt;
+    private readonly IAccesTokenGenerator _tokenGenerator;
 
-    public UserService(IUserRepository repository, IPasswordEncrypt passwordEncrypt)
+    public UserService(IUserRepository repository, IPasswordEncrypt passwordEncrypt,IAccesTokenGenerator tokenGenerator)
     {
         _repository = repository;
         _passwordEncrypt = passwordEncrypt;
+        _tokenGenerator = tokenGenerator;
     }
 
     public void Validate(RegisterUserRequestJson request)
@@ -31,7 +35,7 @@ public class UserService
         }
     }
 
-    public UserModel RegisterUser(RegisterUserRequestJson request)
+    public ResponseRegisteredUserJson RegisterUser(RegisterUserRequestJson request)
     {
         Validate(request);
 
@@ -44,37 +48,65 @@ public class UserService
         };
         _repository.Create(entity);
 
-        return entity;
+        return new ResponseRegisteredUserJson
+        {
+            Name = entity.Name,
+            Token = _tokenGenerator.GenerateToken(entity),
+            EmpresaIds = new List<Guid>()
+        };
     }
 
-    public void LinkUserToEmpresa(Guid userId, Guid empresaId)
+    public async Task<ResponseRegisteredUserJson> Login(LoginUserRequest request)
     {
-        _repository.LinkUserToEmpresa(userId, empresaId);
+        var user = await _repository.GetByEmail(request.Email);
+
+        if (user == null)
+        {
+            throw new Exception();
+        }
+
+        var passwordMatch = _passwordEncrypt.Verify(request.Password, user.Password);
+
+        if(!passwordMatch)
+        {
+            throw new Exception();
+        }
+
+        return new ResponseRegisteredUserJson {
+            Name = request.Email,
+            Token = _tokenGenerator.GenerateToken(new UserModel { Email = request.Email }),
+            EmpresaIds = new List<Guid>()
+        };
     }
 
-    public void UnlinkUserFromEmpresa(Guid userId, Guid empresaId)
+    public async Task LinkUserToEmpresa(Guid userId, Guid empresaId)
     {
-        _repository.UnlinkUserFromEmpresa(userId, empresaId);
+        await _repository.LinkUserToEmpresa(userId, empresaId);
     }
 
-    public List<EmpresaModel> GetUserEmpresas(Guid userId)
+    public async Task UnlinkUserFromEmpresa(Guid userId, Guid empresaId)
     {
-        return _repository.GetUserEmpresas(userId);
+        await _repository.UnlinkUserFromEmpresa(userId, empresaId);
     }
 
-    public List<UserModel> GetAllUsers()
+    public async Task<List<EmpresaModel>> GetUserEmpresas(Guid userId)
     {
-        return _repository.GetAll();
+        return await _repository.GetUserEmpresas(userId);
     }
 
-    public UserModel? GetById(Guid id)
+    public async Task<List<UserModel>> GetAllUsers()
     {
-        return _repository.GetById(id);
+        return await _repository.GetAll();
     }
 
-    public UserModel? ValidateLogin(string email, string password)
+    public async Task<UserModel?> GetById(Guid id)
     {
-        var user = _repository.GetByEmail(email);
+        return await _repository.GetById(id);
+    }
+
+    public async Task<UserModel?> ValidateLogin(string email, string password)
+    {
+        var user = await _repository.GetByEmail(email);
 
         if (user == null)
         {
