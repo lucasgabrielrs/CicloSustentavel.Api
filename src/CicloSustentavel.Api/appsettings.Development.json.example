@@ -10,7 +10,7 @@
   },
   "Settings": {
     "Jwt": {
-      "SecretKey": "H:?}QDZ7fueYEuNi,VpZ}n^NU*tcFZKC",
+      "SecretKey": "YOUR_DEV_SECRET_KEY_MINIMUM_32_CHARACTERS_HERE",
       "ExpiresTimeMinutes": 1000
     }
   }

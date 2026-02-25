@@ -480,3 +480,13 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+# Custom: Sensitive configuration files with secrets
+appsettings.Development.json
+appsettings.Production.json
+appsettings.Staging.json
+
+# Custom: SQLite database files
+*.db
+*.db-shm
+*.db-wal
