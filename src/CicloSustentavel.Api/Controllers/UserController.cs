@@ -2,6 +2,7 @@
 using CicloSustentavel.Application.Services;
 using CicloSustentavel.Communication.Requests.Users;
 using CicloSustentavel.Communication.Responses.Users;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CicloSustentavel.Api.Controllers;
@@ -66,6 +67,7 @@ public class UserController : ControllerBase
     }
 
     [HttpPost("{userId}/empresas/{empresaId}")]
+    [Authorize]
     public async Task<IActionResult> LinkToEmpresa(Guid userId, Guid empresaId)
     {
         try
@@ -80,6 +82,7 @@ public class UserController : ControllerBase
     }
 
     [HttpDelete("{userId}/empresas/{empresaId}")]
+    [Authorize]
     public async Task<IActionResult> UnlinkFromEmpresa(Guid userId, Guid empresaId)
     {
         try
@@ -94,6 +97,7 @@ public class UserController : ControllerBase
     }
 
     [HttpGet("{userId}/empresas")]
+    [Authorize]
     public async Task<IActionResult> GetUserEmpresas(Guid userId)
     {
         var empresas = await _service.GetUserEmpresas(userId);

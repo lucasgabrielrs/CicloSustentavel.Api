@@ -2,12 +2,14 @@
 using CicloSustentavel.Application.Services;
 using CicloSustentavel.Communication.Requests.Products;
 using CicloSustentavel.Communication.Responses.Products;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CicloSustentavel.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class ProductsController : ControllerBase
 {
     private readonly ProductService _service;
