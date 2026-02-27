@@ -54,7 +54,7 @@ public class UserController : ControllerBase
         var user = await _service.GetById(id);
         if (user == null)
         {
-            return NotFound();
+            return NotFound(new ResponseErrorJson("Usuário não encontrado."));
         }
         var response = new ResponseUserJson
         {
@@ -76,9 +76,13 @@ public class UserController : ControllerBase
             await _service.LinkUserToEmpresa(userId, empresaId);
             return NoContent();
         }
-        catch (ArgumentException ex)
+        catch (NotFoundException ex)
         {
-            return BadRequest(new { message = ex.Message });
+            return NotFound(new ResponseErrorJson(ex.Message));
+        }
+        catch (ConflictException ex)
+        {
+            return Conflict(new ResponseErrorJson(ex.Message));
         }
     }
 
@@ -91,9 +95,9 @@ public class UserController : ControllerBase
             await _service.UnlinkUserFromEmpresa(userId, empresaId);
             return NoContent();
         }
-        catch (ArgumentException ex)
+        catch (NotFoundException ex)
         {
-            return BadRequest(new { message = ex.Message });
+            return NotFound(new ResponseErrorJson(ex.Message));
         }
     }
 

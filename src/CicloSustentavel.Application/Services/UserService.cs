@@ -62,14 +62,14 @@ public class UserService
 
         if (user == null)
         {
-            throw new System.Exception();
+            throw new InvalidLoginException();
         }
 
         var passwordMatch = _passwordEncrypt.Verify(request.Password, user.Password);
 
         if(!passwordMatch)
         {
-            throw new System.Exception();
+            throw new InvalidLoginException();
         }
 
         return new ResponseRegisteredUserJson {

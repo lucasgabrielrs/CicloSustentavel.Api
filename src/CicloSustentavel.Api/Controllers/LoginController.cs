@@ -1,6 +1,8 @@
 ﻿using CicloSustentavel.Application.Services;
 using CicloSustentavel.Communication.Requests.Users;
+using CicloSustentavel.Communication.Responses;
 using CicloSustentavel.Communication.Responses.Users;
+using CicloSustentavel.Exception.ExceptionsBase;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CicloSustentavel.Api.Controllers
@@ -21,9 +23,9 @@ namespace CicloSustentavel.Api.Controllers
                 var response = await userService.Login(request);
                 return Ok(response);
             }
-            catch
+            catch (InvalidLoginException ex)
             {
-                return Unauthorized();
+                return Unauthorized(new ResponseErrorJson(ex.Message));
             }
         }
     }

@@ -91,7 +91,7 @@ public class ProductsController : ControllerBase
         {
             return BadRequest(new ResponseErrorJson(ex.Errors));
         }
-        catch (System.Exception ex)
+        catch (NotFoundException ex)
         {
             return NotFound(new ResponseErrorJson(ex.Message));
         }

@@ -74,7 +74,7 @@ public class ProductService
     {
         var product = _repository.GetById(id);
         if (product == null)
-            throw new ErrorOnValidationException(new List<string> { "Produto não encontrado." });
+            throw new NotFoundException("Produto não encontrado.");
         return new ResponseProductJson
         {
             Id = product.Id,
@@ -98,7 +98,7 @@ public class ProductService
     {
         var product = _repository.GetById(id);
         if (product == null)
-            throw new ErrorOnValidationException(new List<string> { "Produto não encontrado." });
+            throw new NotFoundException("Produto não encontrado.");
         _repository.Delete(product);
     }
 
@@ -107,7 +107,7 @@ public class ProductService
         Validate(request);
         var existingProduct = _repository.GetById(id);
         if (existingProduct == null)
-            throw new ErrorOnValidationException(new List<string> { "Produto não encontrado." });
+            throw new NotFoundException("Produto não encontrado.");
         existingProduct.Name = request.Name;
         existingProduct.UnitPrice = request.UnitPrice;
         existingProduct.InventoryQuantity = request.InventoryQuantity;
