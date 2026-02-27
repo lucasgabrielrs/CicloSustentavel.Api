@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <ProjectReference Include="..\..\CicloSustentavel.Exception\CicloSustentavel.Exception.csproj" />
     <ProjectReference Include="..\CicloSustentavel.Domain\CicloSustentavel.Domain.csproj" />
   </ItemGroup>
 

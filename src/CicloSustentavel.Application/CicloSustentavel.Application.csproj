@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <ProjectReference Include="..\..\CicloSustentavel.Exception\CicloSustentavel.Exception.csproj" />
     <ProjectReference Include="..\CicloSustentavel.Domain\CicloSustentavel.Domain.csproj" />
     <ProjectReference Include="..\CicloSustentavel.Communication\CicloSustentavel.Communication.csproj" />
   </ItemGroup>
@@ -8,6 +9,10 @@
   <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageReference Include="FluentValidation" Version="12.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Exceptions\" />
   </ItemGroup>
 
   <PropertyGroup>

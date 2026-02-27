@@ -1,5 +1,4 @@
 ﻿// CicloSustentavel.Application/Services/ProductService.cs
-using CicloSustentavel.Application.Exceptions;
 using CicloSustentavel.Application.Validators;
 using CicloSustentavel.Communication.Requests.Users;
 using CicloSustentavel.Communication.Responses.Users;
@@ -7,6 +6,7 @@ using CicloSustentavel.Domain.Models;
 using CicloSustentavel.Domain.Repositories;
 using CicloSustentavel.Domain.Security.Cryptography;
 using CicloSustentavel.Domain.Security.Tokens;
+using CicloSustentavel.Exception.ExceptionsBase;
 
 namespace CicloSustentavel.Application.Services;
 
@@ -31,7 +31,7 @@ public class UserService
         if (!result.IsValid)
         {
             var errorMessages = result.Errors.Select(f => f.ErrorMessage).ToList();
-            throw new ValidationErrorsException(errorMessages);
+            throw new ErrorOnValidationException(errorMessages);
         }
     }
 
@@ -62,14 +62,14 @@ public class UserService
 
         if (user == null)
         {
-            throw new Exception();
+            throw new System.Exception();
         }
 
         var passwordMatch = _passwordEncrypt.Verify(request.Password, user.Password);
 
         if(!passwordMatch)
         {
-            throw new Exception();
+            throw new System.Exception();
         }
 
         return new ResponseRegisteredUserJson {

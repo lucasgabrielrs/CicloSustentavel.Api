@@ -1,7 +1,8 @@
-﻿using CicloSustentavel.Application.Exceptions;
-using CicloSustentavel.Application.Services;
+﻿using CicloSustentavel.Application.Services;
 using CicloSustentavel.Communication.Requests.Users;
+using CicloSustentavel.Communication.Responses;
 using CicloSustentavel.Communication.Responses.Users;
+using CicloSustentavel.Exception.ExceptionsBase;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -26,9 +27,9 @@ public class UserController : ControllerBase
             var response = _service.RegisterUser(request);
             return Created(string.Empty, response);
         }
-        catch (ValidationErrorsException ex)
+        catch (ErrorOnValidationException ex)
         {
-            return BadRequest(new { errors = ex.ErrorMessages });
+            return BadRequest(new ResponseErrorJson(ex.Errors));
         }
     }
 

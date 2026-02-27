@@ -1,7 +1,8 @@
-﻿using CicloSustentavel.Application.Exceptions;
-using CicloSustentavel.Application.Services;
+﻿using CicloSustentavel.Application.Services;
 using CicloSustentavel.Communication.Requests.Products;
+using CicloSustentavel.Communication.Responses;
 using CicloSustentavel.Communication.Responses.Products;
+using CicloSustentavel.Exception.ExceptionsBase;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -27,9 +28,9 @@ public class ProductsController : ControllerBase
             _service.RegisterProduct(request);
             return Created(string.Empty, null);
         }
-        catch (ValidationErrorsException ex)
+        catch (ErrorOnValidationException ex)
         {
-            return BadRequest(new { errors = ex.ErrorMessages });
+            return BadRequest(new ResponseErrorJson(ex.Errors));
         }
     }
 
@@ -71,9 +72,9 @@ public class ProductsController : ControllerBase
             _service.Delete(id);
             return NoContent();
         }
-        catch (Exception ex)
+        catch (ErrorOnValidationException ex)
         {
-            return NotFound(new { message = ex.Message });
+            return NotFound(new ResponseErrorJson(ex.Errors));
         }
     }
 
@@ -86,13 +87,13 @@ public class ProductsController : ControllerBase
             _service.Update(id, request);
             return NoContent();
         }
-        catch (ValidationErrorsException ex)
+        catch (ErrorOnValidationException ex)
         {
-            return BadRequest(new { errors = ex.ErrorMessages });
+            return BadRequest(new ResponseErrorJson(ex.Errors));
         }
-        catch (Exception ex)
+        catch (System.Exception ex)
         {
-            return NotFound(new { message = ex.Message });
+            return NotFound(new ResponseErrorJson(ex.Message));
         }
     }
 }

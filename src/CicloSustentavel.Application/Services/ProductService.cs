@@ -1,10 +1,10 @@
 ﻿// CicloSustentavel.Application/Services/ProductService.cs
-using CicloSustentavel.Application.Exceptions;
 using CicloSustentavel.Application.Validators;
 using CicloSustentavel.Communication.Requests.Products;
 using CicloSustentavel.Communication.Responses.Products;
 using CicloSustentavel.Domain.Models;
 using CicloSustentavel.Domain.Repositories;
+using CicloSustentavel.Exception.ExceptionsBase;
 
 namespace CicloSustentavel.Application.Services;
 
@@ -25,7 +25,7 @@ public class ProductService
         if (!result.IsValid)
         {
             var errorMessages = result.Errors.Select(f => f.ErrorMessage).ToList();
-            throw new ValidationErrorsException(errorMessages);
+            throw new ErrorOnValidationException(errorMessages);
         }
     }
 
@@ -74,7 +74,7 @@ public class ProductService
     {
         var product = _repository.GetById(id);
         if (product == null)
-            throw new ValidationErrorsException(new List<string> { "Produto não encontrado." });
+            throw new ErrorOnValidationException(new List<string> { "Produto não encontrado." });
         return new ResponseProductJson
         {
             Id = product.Id,
@@ -98,7 +98,7 @@ public class ProductService
     {
         var product = _repository.GetById(id);
         if (product == null)
-            throw new ValidationErrorsException(new List<string> { "Produto não encontrado." });
+            throw new ErrorOnValidationException(new List<string> { "Produto não encontrado." });
         _repository.Delete(product);
     }
 
@@ -107,7 +107,7 @@ public class ProductService
         Validate(request);
         var existingProduct = _repository.GetById(id);
         if (existingProduct == null)
-            throw new ValidationErrorsException(new List<string> { "Produto não encontrado." });
+            throw new ErrorOnValidationException(new List<string> { "Produto não encontrado." });
         existingProduct.Name = request.Name;
         existingProduct.UnitPrice = request.UnitPrice;
         existingProduct.InventoryQuantity = request.InventoryQuantity;

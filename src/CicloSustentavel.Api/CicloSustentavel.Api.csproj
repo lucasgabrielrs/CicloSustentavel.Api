@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\CicloSustentavel.Exception\CicloSustentavel.Exception.csproj" />
     <ProjectReference Include="..\CicloSustentavel.Application\CicloSustentavel.Application.csproj" />
     <ProjectReference Include="..\CicloSustentavel.Infrastructure\CicloSustentavel.Infrastructure.csproj" />
   </ItemGroup>

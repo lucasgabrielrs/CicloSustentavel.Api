@@ -1,5 +1,6 @@
 <Solution>
   <Folder Name="/src/">
+    <Project Path="CicloSustentavel.Exception/CicloSustentavel.Exception.csproj" Id="d96fe5c6-6a8d-4f46-829d-7b2865a08903" />
     <Project Path="src/CicloSustentavel.Api/CicloSustentavel.Api.csproj" />
     <Project Path="src/CicloSustentavel.Application/CicloSustentavel.Application.csproj" />
     <Project Path="src/CicloSustentavel.Communication/CicloSustentavel.Communication.csproj" />
