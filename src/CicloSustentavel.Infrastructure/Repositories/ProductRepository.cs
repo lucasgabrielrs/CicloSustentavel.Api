@@ -20,16 +20,14 @@ public class ProductRepository : IProductRepository
         _context.SaveChanges();
     }
 
-    public List<ProductModel> GetAll(Guid userId)
+    public List<ProductModel> GetAll(Guid empresaId)
     {
-        var user = _context.Users
-            .Include(u => u.Empresas)
-            .FirstOrDefault(u => u.Id == userId);
+        var empresa = _context.Empresas.Find(empresaId);
 
-        if (user == null || !user.Empresas.Any())
+        if (empresa == null)
             return new List<ProductModel>();
 
-        var empresaIds = user.Empresas.Select(e => e.Id).ToList();
+        var empresaIds = empresaId == Guid.Empty ? _context.Empresas.Select(e => e.Id).ToList() : new List<Guid> { empresaId };
 
         return _context.Products
             .Include(p => p.Empresa)

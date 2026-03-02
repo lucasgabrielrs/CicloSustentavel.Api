@@ -11,5 +11,6 @@
         public string Description { get; set; } = string.Empty;
         public string Origin { get; set; } = string.Empty;
         public int PackagingType { get; set; }
+        public Guid EmpresaId { get; set; }
     }
 }

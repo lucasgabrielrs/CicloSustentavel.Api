@@ -1,29 +1,34 @@
-# Estágio de build
+# Build stage
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
-# Copia os arquivos de projeto e restaura dependências
-COPY CicloSustentavel.Api/CicloSustentavel.Api.csproj CicloSustentavel.Api/
-COPY CicloSustentavel.Application/CicloSustentavel.Application.csproj CicloSustentavel.Application/
-COPY CicloSustentavel.Communication/CicloSustentavel.Communication.csproj CicloSustentavel.Communication/
-COPY CicloSustentavel.Domain/CicloSustentavel.Domain.csproj CicloSustentavel.Domain/
-COPY CicloSustentavel.Infrastructure/CicloSustentavel.Infrastructure.csproj CicloSustentavel.Infrastructure/
+# Copiar arquivos de projeto
+COPY ["../src/CicloSustentavel.Api/CicloSustentavel.Api.csproj", "src/CicloSustentavel.Api/"]
+COPY ["../src/CicloSustentavel.Application/CicloSustentavel.Application.csproj", "src/CicloSustentavel.Application/"]
+COPY ["../src/CicloSustentavel.Communication/CicloSustentavel.Communication.csproj", "src/CicloSustentavel.Communication/"]
+COPY ["../src/CicloSustentavel.Domain/CicloSustentavel.Domain.csproj", "src/CicloSustentavel.Domain/"]
+COPY ["../src/CicloSustentavel.Infrastructure/CicloSustentavel.Infrastructure.csproj", "src/CicloSustentavel.Infrastructure/"]
+COPY ["../CicloSustentavel.Exception/CicloSustentavel.Exception.csproj", "CicloSustentavel.Exception/"]
 
-RUN dotnet restore CicloSustentavel.Api/CicloSustentavel.Api.csproj
+# Restaurar dependências
+RUN dotnet restore "src/CicloSustentavel.Api/CicloSustentavel.Api.csproj"
 
-# Copia o restante do código e publica
-COPY . .
-RUN dotnet publish CicloSustentavel.Api/CicloSustentavel.Api.csproj -c Release -o /app/publish
+# Copiar todo o código fonte
+COPY .. .
 
-# Estágio de runtime
-FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
+# Build da aplicação
+WORKDIR "/src/src/CicloSustentavel.Api"
+RUN dotnet build "CicloSustentavel.Api.csproj" -c Release -o /app/build
+
+# Publish stage
+FROM build AS publish
+RUN dotnet publish "CicloSustentavel.Api.csproj" -c Release -o /app/publish /p:UseAppHost=false
+
+# Runtime stage
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 WORKDIR /app
-
-COPY --from=build /app/publish .
-
-# Cria a pasta onde o SQLite vai salvar o arquivo .db
-RUN mkdir -p /app/data
-
 EXPOSE 8080
+EXPOSE 8081
 
+COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "CicloSustentavel.Api.dll"]

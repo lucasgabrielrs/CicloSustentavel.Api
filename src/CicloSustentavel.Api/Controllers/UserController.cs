@@ -24,12 +24,16 @@ public class UserController : ControllerBase
     {
         try
         {
-            var response = _service.RegisterUser(request);
+            var response = await _service.RegisterUser(request);
             return Created(string.Empty, response);
         }
         catch (ErrorOnValidationException ex)
         {
             return BadRequest(new ResponseErrorJson(ex.Errors));
+        }
+        catch (DuplicateEmailException ex)
+        {
+            return Conflict(new ResponseErrorJson(ex.Message));
         }
     }
 

@@ -1,18 +1,47 @@
 services:
+  mysql:
+    image: mysql:8.0
+    container_name: ciclosustentavel-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: ciclosustentavel
+      MYSQL_USER: ciclouser
+      MYSQL_PASSWORD: ciclopass123
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - ciclo-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot123"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   api:
     build:
       context: ..
       dockerfile: docker/Dockerfile
-    container_name: ciclo-sustentavel-api
-    ports:
-      - "8080:8080"
+    container_name: ciclosustentavel-api
     environment:
-      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:8080
-      - ConnectionStrings__DefaultConnection=Data Source=/app/data/CicloSustentavel.db
-    volumes:
-      - sqlite_data:/app/data
+      - ConnectionStrings__DefaultConnection=Server=mysql;Port=3306;Database=ciclosustentavel;User=root;Password=root123;
+      - Settings__Jwt__SecretKey=your-super-secret-key-change-this-in-production-minimum-32-characters
+      - Settings__Jwt__ExpiresTimeMinutes=60
+    ports:
+      - "5000:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - ciclo-network
     restart: unless-stopped
 
 volumes:
-  sqlite_data:
+  mysql_data:
+
+networks:
+  ciclo-network:
+    driver: bridge

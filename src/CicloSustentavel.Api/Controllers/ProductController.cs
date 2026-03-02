@@ -37,12 +37,12 @@ public class ProductsController : ControllerBase
     [HttpGet]
     [Route("listAll")]
     [ProducesResponseType(typeof(ResponseAllProductsJson), StatusCodes.Status200OK)]
-    public IActionResult GetAll([FromHeader(Name = "X-User-Id")] Guid userId)
+    public IActionResult GetAll([FromHeader(Name = "X-Company-Id")] Guid empresaId)
     {
-        if (userId == Guid.Empty)
-            return BadRequest(new { message = "UserId é obrigatório no header X-User-Id" });
+        if (empresaId == Guid.Empty)
+            return BadRequest(new { message = "Id da empresa ativa é obrigatório no header X-Company-Id" });
 
-        var response = _service.GetAllProducts(userId);
+        var response = _service.GetAllProducts(empresaId);
 
         if (response.Products.Any())
             return Ok(response);

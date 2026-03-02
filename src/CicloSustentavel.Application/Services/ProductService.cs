@@ -43,15 +43,16 @@ public class ProductService
             UnitOfMeasurement = (Domain.Enums.UnitOfMeasurement)request.UnitOfMeasurement,
             Description = request.Description,
             Origin = request.Origin,
-            PackagingType = (Domain.Enums.PackagingType)request.PackagingType
+            PackagingType = (Domain.Enums.PackagingType)request.PackagingType,
+            EmpresaId = request.EmpresaId
         };
 
         _repository.Add(entity);
     }
 
-    public ResponseAllProductsJson GetAllProducts(Guid userId)
+    public ResponseAllProductsJson GetAllProducts(Guid empresaId)
     {
-        var products = _repository.GetAll(userId);
+        var products = _repository.GetAll(empresaId);
 
         return new ResponseAllProductsJson
         {

@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -37,10 +38,12 @@ builder.Services.AddCors(options =>
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? (builder.Environment.IsDevelopment()
-        ? "Data Source=../CicloSustentavel.Infrastructure/CicloSustentavel.db"
-        : "Data Source=/app/data/CicloSustentavel.db");
+        ? "Server=localhost;Port=3306;Database=ciclosustentavel;User=root;Password=root123;"
+        : "Server=mysql;Port=3306;Database=ciclosustentavel;User=root;Password=root123;");
 
-builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlite(connectionString));
+var serverVersion = new MySqlServerVersion(new Version(8, 0, 40));
+builder.Services.AddDbContext<AppDbContext>(options => 
+    options.UseMySql(connectionString, serverVersion));
 
 builder.Services.AddControllers();
 

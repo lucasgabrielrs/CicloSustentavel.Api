@@ -35,9 +35,15 @@ public class UserService
         }
     }
 
-    public ResponseRegisteredUserJson RegisterUser(RegisterUserRequestJson request)
+    public async Task<ResponseRegisteredUserJson> RegisterUser(RegisterUserRequestJson request)
     {
         Validate(request);
+
+        var existingUser = await _repository.GetByEmail(request.Email);
+        if (existingUser != null)
+        {
+            throw new DuplicateEmailException();
+        }
 
         var entity = new UserModel
         {
@@ -46,7 +52,7 @@ public class UserService
             Password = _passwordEncrypt.Encrypt(request.Password),
             Role = request.Role
         };
-        _repository.Create(entity);
+        await _repository.Create(entity);
 
         return new ResponseRegisteredUserJson
         {
